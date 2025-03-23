@@ -1,0 +1,254 @@
+"use client";
+
+import Image from 'next/image';
+import { useParams, useRouter } from 'next/navigation';
+import { featuredProducts, flashSaleProducts } from '../../products';
+import { useCart } from '@/app/context/CartContext';
+import { useState, useEffect } from 'react';
+
+const ProductDetail = () => {
+  const [isMounted, setIsMounted] = useState(false);
+  const { id } = useParams() as { id: string };
+  const { addItem } = useCart();
+  const [quantity, setQuantity] = useState(1);
+  const router = useRouter();
+  const [selectedImage, setSelectedImage] = useState(0);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  if (!isMounted) return null;
+
+  const product = [...featuredProducts, ...flashSaleProducts].find((p) => p.id.toString() === id);
+
+  if (!product) {
+    return <p className="text-center text-red-600 font-semibold mt-10">Product not found</p>;
+  }
+
+  const handleAddToCart = () => {
+    addItem({
+      id: product.id.toString(),
+      name: product.name,
+      price: parseFloat(product.price.toString()),
+      image: `/images/${product.img}`,
+      quantity: quantity,
+    });
+  };
+
+  const handleBuyNow = () => {
+    handleAddToCart();
+    router.push('/checkout');
+  };
+
+  const productImages = product.images || []; 
+  
+  const renderRating = (rating: number) => {
+    return (
+      <div className="flex items-center gap-1">
+        {[...Array(5)].map((_, index) => (
+          <div key={index} className={`w-4 h-4 ${index < rating ? 'bg-[#ffb400]' : 'bg-gray-300'} mask mask-star`} />
+        ))}
+        <span className="ml-2 text-sm text-gray-500">({product.reviews} Ratings)</span>
+      </div>
+    );
+  };
+
+  return (
+    <section className="p-4 bg-gray-100 pt-20 max-w-6xl mx-auto">
+      <div className="flex flex-col lg:flex-row gap-4">
+        {/* Image Gallery */}
+        <div className="w-full lg:w-2/5 bg-white p-4 rounded shadow-sm">
+          <div className="relative h-96 mb-4">
+            <Image
+              src={`/images/${product.images[selectedImage]}`}  // Changed to use images array
+              alt={product.name}
+              fill
+              className="object-contain"
+              priority
+            />
+          </div>
+          <div className="flex gap-2">
+            {product.images.map((img, index) => (  // Changed to use images array directly
+              <div
+                key={index}
+                onClick={() => setSelectedImage(index)}
+                className={`w-16 h-16 border-2 cursor-pointer ${
+                  selectedImage === index ? 'border-orange-500' : 'border-gray-200'
+                }`}
+              >
+                <Image
+                  src={`/images/${img}`}
+                  alt=""
+                  width={64}
+                  height={64}
+                  className="object-cover w-full h-full"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Product Details */}
+        <div className="w-full lg:w-3/5 space-y-4">
+          <h1 className="text-2xl font-normal text-gray-800">{product.name}</h1>
+          
+          <div className="flex items-center gap-4">
+            {renderRating(product.rating || 4.5)}
+            <div className="h-4 w-px bg-gray-300"></div>
+            <span className="text-sm text-gray-500">2k+ Sold</span>
+          </div>
+
+          <div className="bg-gray-50 p-4 rounded">
+            <div className="flex items-baseline gap-3">
+              <span className="text-3xl font-bold text-orange-500">{product.price}</span>
+              <span className="text-xl text-gray-500 line-through">{product.price * 1.5}</span>
+              <span className="text-green-600 font-medium">-33%</span>
+            </div>
+            
+            <div className="mt-2 flex items-center gap-2 text-sm text-gray-600">
+              <span>Installment:</span>
+              <span className="font-medium text-blue-600">1,017/month</span>
+              <span className="text-gray-400">with</span>
+              <Image src="/icons/BAF.jpg" width={50} height={20} alt="bKash" />
+            </div>
+          </div>
+
+          {/* Delivery Info */}
+          <div className="bg-white p-4 rounded shadow-sm">
+            <div className="flex items-center gap-2 mb-2">
+              <Image src="/icons/delivery-truck.jpg" width={24} height={24} alt="Delivery" />
+              <span className=" font-bold text-gray-800">Delivery</span>
+            </div>
+            
+            <div className="flex justify-between text-sm">
+              <div>
+                <p className="text-gray-600">China: <span className="font-medium">1-2 days</span></p>
+                <p className="text-gray-600">Outside China: <span className="font-medium">3-5 days</span></p>
+              </div>
+              <span className="text-blue-600 cursor-pointer">Change Location</span>
+            </div>
+          </div>
+
+          {/* Service Options */}
+          <div className="bg-white p-4 rounded shadow-sm">
+            <div className="grid grid-cols-2 gap-4 text-sm">
+              <div className="flex items-center gap-2 text-gray-800">
+                
+                7 Days Returns
+              </div>
+              <div className="flex items-center gap-2 text-gray-800">
+                Warranty not available
+              </div>
+            </div>
+          </div>
+
+          {/* Quantity Selector */}
+          <div className="bg-white p-4 rounded shadow-sm">
+            <div className="flex items-center gap-4">
+              <span className="text-gray-600">Quantity:</span>
+              <div className="flex items-center border rounded">
+                <button
+                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  className="px-3 py-1 bg-gray-100 text-gray-600 hover:bg-gray-200"
+                >
+                  -
+                </button>
+                <span className="w-12 text-center border-x text-black">{quantity}</span>
+                <button
+                  onClick={() => setQuantity(quantity + 1)}
+                  className="px-3 py-1 bg-gray-100 text-gray-600 hover:bg-gray-200"
+                >
+                  +
+                </button>
+              </div>
+              
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex gap-4">
+            <button
+              onClick={handleAddToCart}
+              className="flex-1 py-3 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded shadow-md"
+            >
+              Add to Cart
+            </button>
+            <button
+              onClick={handleBuyNow}
+              className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-medium rounded shadow-md"
+            >
+              Buy Now
+            </button>
+          </div>
+
+          {/* Seller Info */}
+          <div className="bg-white p-4 rounded shadow-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Image 
+                  src="/images/seller-logo.jpg" 
+                  width={40} 
+                  height={40} 
+                  alt="Seller" 
+                  className="rounded-full"
+                />
+                <div>
+                  <p className="font-bold text-gray-800">Official Store</p>
+                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                    <span>94% Positive Seller Ratings</span>
+                    <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
+                    <span>4.8/5</span>
+                  </div>
+                </div>
+              </div>
+              <button className="px-4 py-2 border border-orange-500 text-orange-500 rounded hover:bg-orange-50">
+                Visit Store
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Product Specs */}
+      <div className="mt-4 bg-white p-4 rounded shadow-sm">
+        <h3 className="text-lg font-medium mb-4 text-gray-800">Specifications</h3>
+        <div className="grid grid-cols-2 gap-4 text-sm">
+          <div className="flex justify-between">
+            <span className="text-gray-500">Brand</span>
+            <span className="text-gray-700">{product.brand || 'Generic'}</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-500">Model</span>
+            <span className="text-gray-700">X-2024</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-500">Warranty</span>
+            <span className="text-gray-700">1 Year</span>
+          </div>
+          <div className="flex justify-between">
+            <span className="text-gray-500">SKU</span>
+            <span className="text-gray-700">DZ{product.id}X</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Promotions */}
+      <div className="mt-4 bg-white p-4 rounded shadow-sm">
+        <h3 className="text-lg font-medium mb-4 text-gray-800">Promotions</h3>
+        <ul className="space-y-2 text-sm text-gray-700">
+          <li className="flex items-center gap-2">
+            <div className="w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</div>
+            Get 10% off with City Bank Credit Cards
+          </li>
+          <li className="flex items-center gap-2">
+            <div className="w-5 h-5 bg-green-100 text-green-600 rounded-full flex items-center justify-center">✓</div>
+            Free gift worth 500 on purchase above 2000
+          </li>
+        </ul>
+      </div>
+    </section>
+  );
+};
+
+export default ProductDetail;
