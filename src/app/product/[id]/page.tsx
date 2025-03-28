@@ -2,36 +2,51 @@
 
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
-import { featuredProducts, flashSaleProducts } from '../../products';
 import { useCart } from '@/app/context/CartContext';
 import { useState, useEffect } from 'react';
 
 const ProductDetail = () => {
-  const [isMounted, setIsMounted] = useState(false);
   const { id } = useParams() as { id: string };
   const { addItem } = useCart();
   const [quantity, setQuantity] = useState(1);
   const router = useRouter();
   const [selectedImage, setSelectedImage] = useState(0);
+  const [product, setProduct] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
+    const fetchProduct = async () => {
+      try {
+        const response = await fetch(`/api/products/${id}`);
+        if (!response.ok) throw new Error('Product not found');
+        const data = await response.json();
+        
+        if (data.success) {
+          setProduct(data.product);
+        } else {
+          throw new Error(data.message);
+        }
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  if (!isMounted) return null;
+    fetchProduct();
+  }, [id]);
 
-  const product = [...featuredProducts, ...flashSaleProducts].find((p) => p.id.toString() === id);
-
-  if (!product) {
-    return <p className="text-center text-red-600 font-semibold mt-10">Product not found</p>;
-  }
+  if (loading) return <p className="text-center mt-10 text-red-600">Loading...</p>;
+  if (error) return <p className="text-center text-red-600 font-semibold mt-10">{error}</p>;
+  if (!product) return <p className="text-center text-red-600 font-semibold mt-10">Product not found</p>;
 
   const handleAddToCart = () => {
     addItem({
-      id: product.id.toString(),
+      id: product._id.toString(),
       name: product.name,
       price: parseFloat(product.price.toString()),
-      image: `/images/${product.img}`,
+      image: `/images/${product.images[0]}`,
       quantity: quantity,
     });
   };
@@ -41,8 +56,6 @@ const ProductDetail = () => {
     router.push('/checkout');
   };
 
-  const productImages = product.images || []; 
-  
   const renderRating = (rating: number) => {
     return (
       <div className="flex items-center gap-1">
@@ -61,7 +74,7 @@ const ProductDetail = () => {
         <div className="w-full lg:w-2/5 bg-white p-4 rounded shadow-sm">
           <div className="relative h-96 mb-4">
             <Image
-              src={`/images/${product.images[selectedImage]}`}  // Changed to use images array
+              src={`/images/${product.images[selectedImage]}`}
               alt={product.name}
               fill
               className="object-contain"
@@ -69,7 +82,7 @@ const ProductDetail = () => {
             />
           </div>
           <div className="flex gap-2">
-            {product.images.map((img, index) => (  // Changed to use images array directly
+            {product.images.map((img: string, index: number) => (
               <div
                 key={index}
                 onClick={() => setSelectedImage(index)}
@@ -118,7 +131,7 @@ const ProductDetail = () => {
           <div className="bg-white p-4 rounded shadow-sm">
             <div className="flex items-center gap-2 mb-2">
               <Image src="/icons/delivery-truck.jpg" width={24} height={24} alt="Delivery" />
-              <span className=" font-bold text-gray-800">Delivery</span>
+              <span className="font-bold text-gray-800">Delivery</span>
             </div>
             
             <div className="flex justify-between text-sm">
@@ -134,7 +147,6 @@ const ProductDetail = () => {
           <div className="bg-white p-4 rounded shadow-sm">
             <div className="grid grid-cols-2 gap-4 text-sm">
               <div className="flex items-center gap-2 text-gray-800">
-                
                 7 Days Returns
               </div>
               <div className="flex items-center gap-2 text-gray-800">
@@ -162,7 +174,6 @@ const ProductDetail = () => {
                   +
                 </button>
               </div>
-              
             </div>
           </div>
 

@@ -1,29 +1,39 @@
 import mongoose from "mongoose";
 
+// Define the common schema for products
 const productSchema = new mongoose.Schema({
-  id: Number,
-  name: String,
-  price: Number,
-  images: [String],
-  rating: Number,
-  reviews: Number,
-  brand: String,
-  description: String,
+  name: { type: String, required: true },
+  price: { type: Number, required: true },
+  images: { type: [String], default: [] },
+  rating: { type: Number, default: 0 },
+  reviews: { type: Number, default: 0 },
+  brand: { type: String, required: true },
+  description: { type: String, required: true },
   shop: {
-    name: String,
-    rating: Number,
-    followers: String
+    name: { type: String, required: true },
+    rating: { type: Number, default: 0 },
+    followers: { type: String, default: "0" },
   },
-  warranty: String,
-  returnPolicy: String
+  warranty: { type: String, default: "No warranty" },
+  returnPolicy: { type: String, default: "No return policy" },
 });
 
-const Product = mongoose.models.Product || mongoose.model("Product", productSchema);
+// Create text index for search and unique constraint on custom ID
+productSchema.index({ name: "text" });
 
-export default Product;
+// Models for different collections
+const FeaturedProduct =
+  mongoose.models.FeaturedProduct || mongoose.model("FeaturedProduct", productSchema, "featured_products");
 
+const FlashSale =
+  mongoose.models.FlashSale || mongoose.model("FlashSale", productSchema, "flash_sale");
+
+// Export the models
+export { FeaturedProduct, FlashSale };
+
+// TypeScript Interface for Type Safety
 export interface IProduct extends mongoose.Document {
-  id: number;
+  _id: string;
   name: string;
   price: number;
   images: string[];

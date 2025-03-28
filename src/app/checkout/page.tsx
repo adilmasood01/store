@@ -34,7 +34,7 @@ const Checkout = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
-      <h1 className="text-2xl font-bold mb-4 text-black">Checkout</h1>
+      <h1 className="text-2xl font-bold mb-4 text-red-400">Checkout</h1>
 
       <div className="border p-4 rounded-md mb-6">
         <h2 className="text-lg font-semibold mb-3 text-gray-600">Order Summary</h2>

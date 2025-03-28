@@ -10,13 +10,13 @@ const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <nav className="bg-black shadow-md fixed w-full py-4 top-0 z-50 text-lg">
+    <nav className="bg-red-100 shadow-md fixed w-full py-4 top-0 z-50 text-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
           {/* Logo */}
           <div className="flex-shrink-0">
             <Link href="/">
-              <button className="text-4xl font-bold text-red-600 focus:outline-none">
+              <button className="text-4xl font-bold text-red-600 focus:outline-none cursor-pointer">
                 Store
               </button>
             </Link>
@@ -30,7 +30,7 @@ const Navbar = () => {
                 className="w-full px-4 py-2 rounded-l border bg-amber-50 border-gray-300 focus:outline-none focus:border-red-500 text-black"
                 placeholder="Search products..."
               />
-              <button className="absolute right-0 top-0 h-full px-6 bg-red-600 text-white rounded-r hover:bg-red-700">
+              <button className="absolute right-0 top-0 h-full px-6 bg-red-600 text-white rounded-r cursor-pointer hover:bg-red-700">
                 Search
               </button>
             </div>
@@ -39,18 +39,18 @@ const Navbar = () => {
           {/* Desktop Menu */}
           <div className="hidden sm:flex items-center space-x-4">
             {user ? (
-              <button onClick={logout} className="text-gray-400 hover:text-red-600">
+              <button onClick={logout} className="text-gray-600 hover:text-red-600 cursor-pointer">
                 🚪 Logout
               </button>
             ) : (
               <Link href="/login">
-                <button className="text-gray-400 hover:text-red-600">
+                <button className="text-gray-600 hover:text-red-600 cursor-pointer">
                   🔑 Login
                 </button>
               </Link>
             )}
             <Link href="/cart">
-              <button className="text-gray-400 hover:text-red-600">
+              <button className="text-gray-600 hover:text-red-600 cursor-pointer">
                 🛒 Cart ({cartItems.reduce((sum, item) => sum + item.quantity, 0)})
               </button>
             </Link>
@@ -82,13 +82,13 @@ const Navbar = () => {
               </button>
             ) : (
               <Link href="/login">
-                <button className="text-gray-400 hover:text-red-600">
+                <button className="text-gray-400 hover:text-red-600 cursor-pointer">
                   🔑 Login
                 </button>
               </Link>
             )}
             <Link href="/cart">
-              <button className="text-gray-400 hover:text-red-600">
+              <button className="text-gray-400 hover:text-red-600 cursor-pointer">
                 🛒 Cart ({cartItems.reduce((sum, item) => sum + item.quantity, 0)})
               </button>
             </Link>
