@@ -3,12 +3,15 @@
 import { useCart } from "@/app/context/CartContext";
 import { useRouter } from "next/navigation";
 import { useState, useCallback } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 interface CartItem {
   id: string;
   name: string;
   price: number;
   quantity: number;
+  image: string;
 }
 
 const Checkout = () => {
@@ -33,67 +36,134 @@ const Checkout = () => {
   }, [cartItems, clearCart, router]);
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white shadow-lg rounded-lg mt-10">
-      <h1 className="text-2xl font-bold mb-4 text-red-400">Checkout</h1>
+    <div className="min-h-screen bg-gradient-to-r from-gray-800 via-gray-700 to-gray-800 text-white">
+      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 pt-20 pb-20">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="bg-gray-800 p-8 rounded-2xl shadow-2xl"
+        >
+          <motion.h1
+            className="text-3xl font-bold mb-8 text-red-400 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            Checkout
+          </motion.h1>
 
-      <div className="border p-4 rounded-md mb-6">
-        <h2 className="text-lg font-semibold mb-3 text-gray-600">Order Summary</h2>
-        {cartItems.length === 0 ? (
-          <p className="text-gray-500">Your cart is empty.</p>
-        ) : (
-          <ul>
-            {cartItems.map((item) => (
-              <li key={item.id} className="flex justify-between mb-2 text-blue-400">
-                <span>{item.name} (x{item.quantity})</span>
-                <span>${(item.price * item.quantity).toFixed(2)}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-        <hr className="my-2" />
-        <div className="flex justify-between font-semibold text-blue-400">
-          <span>Total:</span>
-          <span>${totalPrice.toFixed(2)}</span>
-        </div>
-      </div>
+          <motion.div
+            className="border border-gray-700 p-6 rounded-xl mb-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.4 }}
+          >
+            <h2 className="text-xl font-semibold mb-6 text-red-300">Order Summary</h2>
+            {cartItems.length === 0 ? (
+              <p className="text-gray-400">Your cart is empty.</p>
+            ) : (
+              <AnimatePresence>
+                <ul className="space-y-4">
+                  {cartItems.map((item) => (
+                    <motion.li
+                      key={item.id}
+                      className="flex items-center justify-between bg-gray-700 p-4 rounded-lg"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: 20 }}
+                    >
+                      <div className="flex items-center gap-4">
+                        <Image
+                          src={item.image}
+                          alt={item.name}
+                          width={60}
+                          height={60}
+                          className="rounded-md object-cover"
+                        />
+                        <div>
+                          <h3 className="font-medium text-red-300">{item.name}</h3>
+                          <p className="text-sm text-gray-400">Qty: {item.quantity}</p>
+                        </div>
+                      </div>
+                      <span className="text-red-400">
+                        ${(item.price * item.quantity).toFixed(2)}
+                      </span>
+                    </motion.li>
+                  ))}
+                </ul>
+              </AnimatePresence>
+            )}
+            <div className="border-t border-gray-700 mt-6 pt-4">
+              <div className="flex justify-between text-xl font-semibold text-red-400">
+                <span>Total:</span>
+                <span>${totalPrice.toFixed(2)}</span>
+              </div>
+            </div>
+          </motion.div>
 
-      <div className="border p-4 rounded-md mb-6">
-        <h2 className="text-lg font-semibold mb-3 text-gray-600">Payment Method</h2>
-        <label className="flex items-center mb-2 text-blue-400">
-          <input
-            type="radio"
-            name="payment"
-            value="card"
-            checked={paymentMethod === "card"}
-            onChange={() => setPaymentMethod("card")}
-            className="mr-2"
-            aria-label="Pay with Credit/Debit Card"
-          />
-          Credit/Debit Card
-        </label>
-        <label className="flex items-center text-blue-400">
-          <input
-            type="radio"
-            name="payment"
-            value="cod"
-            checked={paymentMethod === "cod"}
-            onChange={() => setPaymentMethod("cod")}
-            className="mr-2"
-            aria-label="Pay with Cash on Delivery"
-          />
-          Cash on Delivery
-        </label>
-      </div>
+          <motion.div
+            className="border border-gray-700 p-6 rounded-xl mb-8"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.6 }}
+          >
+            <h2 className="text-xl font-semibold mb-6 text-red-300">Payment Method</h2>
+            <div className="space-y-4">
+              <motion.label
+                whileHover={{ scale: 1.02 }}
+                className={`flex items-center p-4 rounded-lg cursor-pointer transition ${
+                  paymentMethod === "card" ? "bg-red-900/20 border-red-400" : "bg-gray-700 border-gray-600"
+                } border`}
+              >
+                <input
+                  type="radio"
+                  name="payment"
+                  value="card"
+                  checked={paymentMethod === "card"}
+                  onChange={() => setPaymentMethod("card")}
+                  className="form-radio h-5 w-5 text-red-400"
+                  aria-label="Pay with Credit/Debit Card"
+                />
+                <span className="ml-3 text-red-300">Credit/Debit Card</span>
+              </motion.label>
 
-      <button
-        onClick={handleCheckout}
-        disabled={cartItems.length === 0}
-        className={`w-full py-3 rounded-md transition 
-          ${cartItems.length === 0 ? "bg-gray-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
-        aria-label="Place order"
-      >
-        Place Order
-      </button>
+              <motion.label
+                whileHover={{ scale: 1.02 }}
+                className={`flex items-center p-4 rounded-lg cursor-pointer transition ${
+                  paymentMethod === "cod" ? "bg-red-900/20 border-red-400" : "bg-gray-700 border-gray-600"
+                } border`}
+              >
+                <input
+                  type="radio"
+                  name="payment"
+                  value="cod"
+                  checked={paymentMethod === "cod"}
+                  onChange={() => setPaymentMethod("cod")}
+                  className="form-radio h-5 w-5 text-red-400"
+                  aria-label="Pay with Cash on Delivery"
+                />
+                <span className="ml-3 text-red-300">Cash on Delivery</span>
+              </motion.label>
+            </div>
+          </motion.div>
+
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleCheckout}
+            disabled={cartItems.length === 0}
+            className={`w-full py-4 text-lg font-semibold rounded-xl transition-all ${
+              cartItems.length === 0 
+                ? "bg-gray-600 cursor-not-allowed text-gray-400" 
+                : "bg-red-500 hover:bg-red-600 text-white"
+            }`}
+            aria-label="Place order"
+          >
+            Place Order
+          </motion.button>
+        </motion.div>
+      </main>
     </div>
   );
 };

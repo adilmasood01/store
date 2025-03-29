@@ -14,7 +14,7 @@ const Categories = () => {
   return (
     <section className="bg-white p-6 rounded-lg shadow-md my-8">
       <h2 className="text-2xl font-bold text-gray-800 mb-4">Popular Categories</h2>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {categories.map((category) => (
           <Link key={category.name} href={category.link} passHref>
             <div className="bg-white p-4 rounded-lg shadow-md text-center hover:shadow-lg transition-shadow cursor-pointerw-full h-[220px] flex flex-col items-center justify-between;">

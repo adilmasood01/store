@@ -3,6 +3,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
+import Image from "next/image";
 
 const Navbar = () => {
   const { cartItems } = useCart();
@@ -13,14 +14,14 @@ const Navbar = () => {
     <nav className="bg-red-100 shadow-md fixed w-full py-4 top-0 z-50 text-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
-          {/* Logo */}
-          <div className="flex-shrink-0">
+        <div className="flex-shrink-0">
             <Link href="/">
-              <button className="text-4xl font-bold text-red-600 focus:outline-none cursor-pointer">
-                Store
-              </button>
+              <div className="flex items-center space-x-2 cursor-pointer">
+                <Image src="/logo.png" alt="Store Logo" width={40} height={40} />
+                <span className="text-4xl font-bold text-red-600">Store</span>
+              </div>
             </Link>
-          </div>
+        </div>
 
           {/* Search Bar (Hidden on Mobile) */}
           <div className="hidden sm:flex flex-1 max-w-2xl mx-8">
@@ -64,7 +65,7 @@ const Navbar = () => {
 
         {/* Mobile Menu Dropdown */}
         {isOpen && (
-          <div className="sm:hidden flex flex-col bg-black p-4 space-y-3">
+          <div className="sm:hidden flex flex-col bg-red-200 p-4 space-y-3">
             {/* Search Bar (Visible on Mobile) */}
             <div className="flex">
               <input

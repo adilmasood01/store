@@ -58,7 +58,7 @@ const FlashSale = () => {
           SHOP ALL PRODUCTS
         </button>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {products.map((product) => (
           <div key={product._id} className="bg-white p-4 rounded-lg text-center flex flex-col min-h-[300px]">
             <Link href={`/product/${product._id}`}>
