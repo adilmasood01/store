@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import Image from "next/image";
 
@@ -143,11 +143,11 @@ const Login = () => {
             </div>
 
             <p className="mt-8 text-center text-gray-400">
-              Don't have an account?{" "}
-              <a href="#" className="text-red-400 hover:text-red-300 transition-colors pointer-events-none">
-                Sign up
-              </a>
-            </p>
+  Don&apos;t have an account?{" "}
+  <a href="#" className="text-red-400 hover:text-red-300 transition-colors pointer-events-none">
+    Sign up
+  </a>
+</p>
           </motion.div>
         </motion.div>
       </div>

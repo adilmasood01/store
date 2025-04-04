@@ -5,13 +5,23 @@ import { useParams, useRouter } from 'next/navigation';
 import { useCart } from '@/app/context/CartContext';
 import { useState, useEffect } from 'react';
 
+interface Product {
+  _id: string;
+  name: string;
+  price: number;
+  images: string[];
+  brand?: string;
+  rating?: number;
+  reviews?: number;
+}
+
 const ProductDetail = () => {
   const { id } = useParams() as { id: string };
   const { addItem } = useCart();
   const [quantity, setQuantity] = useState(1);
   const router = useRouter();
   const [selectedImage, setSelectedImage] = useState(0);
-  const [product, setProduct] = useState<any>(null);
+  const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,27 +37,25 @@ const ProductDetail = () => {
         } else {
           throw new Error(data.message);
         }
-      } catch (err: any) {
-        setError(err.message);
+      } catch (err: unknown) {
+        setError(err instanceof Error ? err.message : 'An unknown error occurred');
       } finally {
         setLoading(false);
       }
     };
 
-    fetchProduct();
+    if (id) fetchProduct();
   }, [id]);
 
-  if (loading) return <p className="text-center mt-10 text-red-600">Loading...</p>;
-  if (error) return <p className="text-center text-red-600 font-semibold mt-10">{error}</p>;
-  if (!product) return <p className="text-center text-red-600 font-semibold mt-10">Product not found</p>;
-
   const handleAddToCart = () => {
+    if (!product) return;
+    
     addItem({
       id: product._id.toString(),
       name: product.name,
-      price: parseFloat(product.price.toString()),
+      price: product.price,
       image: `/images/${product.images[0]}`,
-      quantity: quantity,
+      quantity,
     });
   };
 
@@ -56,16 +64,23 @@ const ProductDetail = () => {
     router.push('/checkout');
   };
 
-  const renderRating = (rating: number) => {
+  const renderRating = (rating: number = 4.5) => {
     return (
       <div className="flex items-center gap-1">
         {[...Array(5)].map((_, index) => (
-          <div key={index} className={`w-4 h-4 ${index < rating ? 'bg-[#ffb400]' : 'bg-gray-300'} mask mask-star`} />
+          <div 
+            key={index} 
+            className={`w-4 h-4 ${index < rating ? 'bg-[#ffb400]' : 'bg-gray-300'} mask mask-star`} 
+          />
         ))}
-        <span className="ml-2 text-sm text-gray-500">({product.reviews} Ratings)</span>
+        <span className="ml-2 text-sm text-gray-500">({product?.reviews || 0} Ratings)</span>
       </div>
     );
   };
+
+  if (loading) return <p className="text-center mt-10 text-red-600">Loading...</p>;
+  if (error) return <p className="text-center text-red-600 font-semibold mt-10">{error}</p>;
+  if (!product) return <p className="text-center text-red-600 font-semibold mt-10">Product not found</p>;
 
   return (
     <section className="p-4 bg-gray-100 pt-20 max-w-6xl mx-auto">
@@ -84,7 +99,7 @@ const ProductDetail = () => {
           <div className="flex gap-2">
             {product.images.map((img: string, index: number) => (
               <div
-                key={index}
+                key={img}
                 onClick={() => setSelectedImage(index)}
                 className={`w-16 h-16 border-2 cursor-pointer ${
                   selectedImage === index ? 'border-orange-500' : 'border-gray-200'
@@ -107,15 +122,15 @@ const ProductDetail = () => {
           <h1 className="text-2xl font-normal text-gray-800">{product.name}</h1>
           
           <div className="flex items-center gap-4">
-            {renderRating(product.rating || 4.5)}
+            {renderRating(product.rating)}
             <div className="h-4 w-px bg-gray-300"></div>
             <span className="text-sm text-gray-500">2k+ Sold</span>
           </div>
 
           <div className="bg-gray-50 p-4 rounded">
             <div className="flex items-baseline gap-3">
-              <span className="text-3xl font-bold text-orange-500">{product.price}</span>
-              <span className="text-xl text-gray-500 line-through">{product.price * 1.5}</span>
+              <span className="text-3xl font-bold text-orange-500">${product.price}</span>
+              <span className="text-xl text-gray-500 line-through">${product.price * 1.5}</span>
               <span className="text-green-600 font-medium">-33%</span>
             </div>
             
@@ -139,7 +154,7 @@ const ProductDetail = () => {
                 <p className="text-gray-600">China: <span className="font-medium">1-2 days</span></p>
                 <p className="text-gray-600">Outside China: <span className="font-medium">3-5 days</span></p>
               </div>
-              <span className="text-blue-600 cursor-pointer">Change Location</span>
+              <button className="text-blue-600" type="button">Change Location</button>
             </div>
           </div>
 
@@ -163,6 +178,7 @@ const ProductDetail = () => {
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   className="px-3 py-1 bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  type="button"
                 >
                   -
                 </button>
@@ -170,6 +186,7 @@ const ProductDetail = () => {
                 <button
                   onClick={() => setQuantity(quantity + 1)}
                   className="px-3 py-1 bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  type="button"
                 >
                   +
                 </button>
@@ -182,12 +199,14 @@ const ProductDetail = () => {
             <button
               onClick={handleAddToCart}
               className="flex-1 py-3 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded shadow-md"
+              type="button"
             >
               Add to Cart
             </button>
             <button
               onClick={handleBuyNow}
               className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-medium rounded shadow-md"
+              type="button"
             >
               Buy Now
             </button>
@@ -213,7 +232,10 @@ const ProductDetail = () => {
                   </div>
                 </div>
               </div>
-              <button className="px-4 py-2 border border-orange-500 text-orange-500 rounded hover:bg-orange-50">
+              <button 
+                className="px-4 py-2 border border-orange-500 text-orange-500 rounded hover:bg-orange-50"
+                type="button"
+              >
                 Visit Store
               </button>
             </div>
@@ -239,7 +261,7 @@ const ProductDetail = () => {
           </div>
           <div className="flex justify-between">
             <span className="text-gray-500">SKU</span>
-            <span className="text-gray-700">DZ{product.id}X</span>
+            <span className="text-gray-700">DZ{product._id.slice(0, 4)}X</span>
           </div>
         </div>
       </div>

@@ -10,7 +10,6 @@ export async function GET(
   try {
     console.log("Fetching product...");
     
-    // Properly await the params by destructuring
     const { id } = await params;
 
     if (!id) {
@@ -30,7 +29,7 @@ export async function GET(
     await dbConnect();
 
     // Try to find product in both collections
-    let product =
+    const product =
       (await FeaturedProduct.findById(id).lean().exec()) ||
       (await FlashSale.findById(id).lean().exec());
 

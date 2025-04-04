@@ -1,4 +1,3 @@
-// FeaturedProducts.tsx
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -6,9 +5,17 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { useCart } from '../context/CartContext';
 
+interface Product {
+  _id: string;
+  id: string;
+  name: string;
+  price: number;
+  img: string;
+}
+
 const FeaturedProducts = () => {
   const { addItem } = useCart();
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Product[]>([]);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -29,11 +36,21 @@ const FeaturedProducts = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {products.map((product) => (
           <div key={product._id} className="bg-white p-4 rounded-lg shadow-md hover:shadow-lg">
-            <Link href={`/product/${product._id}`}>
-            <Image src={`/images/${product.img}`} alt={product.name} width={300} height={200} className="w-full h-48 object-cover cursor-pointer" />
-            <h3 className="text-black font-semibold text-lg mt-2 hover:text-red-500 cursor-pointer">{product.name}</h3>
+            <Link href={`/product/${product._id}`} passHref>
+              <div>
+                <Image 
+                  src={`/images/${product.img}`} 
+                  alt={product.name} 
+                  width={300} 
+                  height={200} 
+                  className="w-full h-48 object-cover cursor-pointer" 
+                />
+                <h3 className="text-black font-semibold text-lg mt-2 hover:text-red-500 cursor-pointer">
+                  {product.name}
+                </h3>
+              </div>
             </Link>
-            <p className="text-red-600 font-bold mt-2">{product.price}.00</p>
+            <p className="text-red-600 font-bold mt-2">${product.price}.00</p>
             <button 
               onClick={() => addItem({
                 id: product.id.toString(),
@@ -43,6 +60,7 @@ const FeaturedProducts = () => {
                 quantity: 1
               })}
               className="mt-4 w-full bg-red-600 text-white py-2 rounded hover:bg-red-700"
+              type="button"
             >
               Add to Cart
             </button>
