@@ -4,6 +4,7 @@ import { FeaturedProduct, FlashSale } from "../../../../../models/Product";
 import { ObjectId } from "mongodb";
 
 export async function GET(
+  request: Request,
   { params }: { params: { id: string } }
 ) {
   try {
