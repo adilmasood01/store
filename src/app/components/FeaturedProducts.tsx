@@ -59,7 +59,7 @@ const FeaturedProducts = () => {
                 image: `/images/${product.img}`,
                 quantity: 1
               })}
-              className="mt-4 w-full bg-red-600 text-white py-2 rounded hover:bg-red-700"
+              className="mt-4 w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 cursor-pointer"
               type="button"
             >
               Add to Cart
