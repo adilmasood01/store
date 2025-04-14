@@ -1,16 +1,16 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { dbConnect } from "../../../../../lib/dbConnect";
 import { FeaturedProduct, FlashSale } from "../../../../../models/Product";
 import { ObjectId } from "mongodb";
 
 export async function GET(
-  request: Request,
+  request: NextRequest,
   { params }: { params: { id: string } }
 ) {
   try {
     console.log("Fetching product...");
     
-    const { id } = await params;
+    const { id } = params;
 
     if (!id) {
       return NextResponse.json(
