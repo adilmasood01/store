@@ -1,18 +1,96 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const Login = () => {
   const { login } = useAuth();
+  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetMessage, setResetMessage] = useState("");
+  const [resetToken, setResetToken] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [isResetPassword, setIsResetPassword] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError("");
+      }, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    login(email, password);
+    try {
+      await login(email, password);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "An error occurred");
+    }
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("/api/auth/forgot-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email: resetEmail }),
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.message);
+      }
+
+      setResetMessage(data.message);
+      setResetToken(data.resetToken);
+      setIsResetPassword(true);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Failed to send reset instructions");
+    }
+  };
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ token: resetToken, newPassword }),
+      });
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.message);
+      }
+
+      setResetMessage(data.message);
+      setTimeout(() => {
+        setIsForgotPassword(false);
+        setIsResetPassword(false);
+        setResetMessage("");
+        setResetToken("");
+        setNewPassword("");
+      }, 3000);
+    } catch (error) {
+      setError(error instanceof Error ? error.message : "Failed to reset password");
+    }
   };
 
   return (
@@ -24,7 +102,6 @@ const Login = () => {
           transition={{ duration: 0.5 }}
           className="flex flex-col items-center justify-center"
         >
-          {/* Logo or Brand Image */}
           <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
@@ -32,7 +109,7 @@ const Login = () => {
             className="mb-8"
           >
             <Image
-              src="/logo.png" // Update with your logo path
+              src="/logo.png"
               alt="Logo"
               width={120}
               height={120}
@@ -40,62 +117,151 @@ const Login = () => {
             />
           </motion.div>
 
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.9 }} 
-            animate={{ opacity: 1, scale: 1 }} 
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6 }}
             className="bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md"
           >
             <h2 className="text-3xl font-bold text-red-400 mb-8 text-center">
-              Welcome Back
+              {isResetPassword ? "Reset Password" : isForgotPassword ? "Forgot Password" : "Welcome Back"}
             </h2>
-            
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div>
-                <label htmlFor="email" className="block text-gray-300 mb-2">
-                  Email
-                </label>
-                <motion.input
-                  whileFocus={{ scale: 1.02 }}
-                  type="email"
-                  id="email"
-                  className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg shadow-sm focus:ring-2 focus:ring-red-400 focus:outline-none transition-all"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
+
+            {error && (
+              <div className="mb-4 p-3 bg-red-500/20 text-red-400 rounded-lg text-sm">
+                {error}
               </div>
+            )}
 
-              <div>
-                <label htmlFor="password" className="block text-gray-300 mb-2">
-                  Password
-                </label>
-                <motion.input
-                  whileFocus={{ scale: 1.02 }}
-                  type="password"
-                  id="password"
-                  className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg shadow-sm focus:ring-2 focus:ring-red-400 focus:outline-none transition-all"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
+            {resetMessage && (
+              <div className="mb-4 p-3 bg-green-500/20 text-green-400 rounded-lg text-sm">
+                {resetMessage}
               </div>
+            )}
 
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                type="submit"
-                className="w-full bg-red-500 text-white py-3 rounded-lg shadow-md hover:bg-red-600 transition-all font-semibold"
-              >
-                Sign In
-              </motion.button>
-            </form>
+            {isResetPassword ? (
+              <form onSubmit={handleResetPassword} className="space-y-6">
+                <div>
+                  <label htmlFor="newPassword" className="block text-gray-300 mb-2">
+                    New Password
+                  </label>
+                  <motion.input
+                    whileFocus={{ scale: 1.02 }}
+                    type="password"
+                    id="newPassword"
+                    className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg shadow-sm focus:ring-2 focus:ring-red-400 focus:outline-none transition-all"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    required
+                    minLength={6}
+                  />
+                </div>
 
-            <div className="mt-6 text-center">
-              <a href="#" className="text-red-400 hover:text-red-300 text-sm transition-colors pointer-events-none">
-                Forgot Password?
-              </a>
-            </div>
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  type="submit"
+                  className="w-full bg-red-500 text-white py-3 rounded-lg shadow-md hover:bg-red-600 transition-all font-semibold"
+                >
+                  Reset Password
+                </motion.button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsResetPassword(false);
+                    setResetToken("");
+                    setNewPassword("");
+                  }}
+                  className="w-full text-red-400 hover:text-red-300 text-sm transition-colors"
+                >
+                  Back to Forgot Password
+                </button>
+              </form>
+            ) : isForgotPassword ? (
+              <form onSubmit={handleForgotPassword} className="space-y-6">
+                <div>
+                  <label htmlFor="resetEmail" className="block text-gray-300 mb-2">
+                    Email
+                  </label>
+                  <motion.input
+                    whileFocus={{ scale: 1.02 }}
+                    type="email"
+                    id="resetEmail"
+                    className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg shadow-sm focus:ring-2 focus:ring-red-400 focus:outline-none transition-all"
+                    value={resetEmail}
+                    onChange={(e) => setResetEmail(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  type="submit"
+                  className="w-full bg-red-500 text-white py-3 rounded-lg shadow-md hover:bg-red-600 transition-all font-semibold"
+                >
+                  Send Reset Instructions
+                </motion.button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsForgotPassword(false)}
+                  className="w-full text-red-400 hover:text-red-300 text-sm transition-colors"
+                >
+                  Back to Login
+                </button>
+              </form>
+            ) : (
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div>
+                  <label htmlFor="email" className="block text-gray-300 mb-2">
+                    Email
+                  </label>
+                  <motion.input
+                    whileFocus={{ scale: 1.02 }}
+                    type="email"
+                    id="email"
+                    className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg shadow-sm focus:ring-2 focus:ring-red-400 focus:outline-none transition-all"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div>
+                  <label htmlFor="password" className="block text-gray-300 mb-2">
+                    Password
+                  </label>
+                  <motion.input
+                    whileFocus={{ scale: 1.02 }}
+                    type="password"
+                    id="password"
+                    className="w-full px-4 py-3 bg-gray-700 text-white rounded-lg shadow-sm focus:ring-2 focus:ring-red-400 focus:outline-none transition-all"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  type="submit"
+                  className="w-full bg-red-500 text-white py-3 rounded-lg shadow-md hover:bg-red-600 transition-all font-semibold"
+                >
+                  Sign In
+                </motion.button>
+
+                <button
+                  type="button"
+                  onClick={() => setIsForgotPassword(true)}
+                  className="w-full text-red-400 hover:text-red-300 text-sm transition-colors"
+                >
+                  Forgot Password?
+                </button>
+              </form>
+            )}
 
             <div className="mt-8">
               <div className="relative">
@@ -109,7 +275,7 @@ const Login = () => {
                 </div>
               </div>
 
-              <div className="mt-6 grid grid-cols-2 gap-3">
+              <div className="mt-6 space-y-4">
                 <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
@@ -143,11 +309,11 @@ const Login = () => {
             </div>
 
             <p className="mt-8 text-center text-gray-400">
-  Don&apos;t have an account?{" "}
-  <a href="#" className="text-red-400 hover:text-red-300 transition-colors pointer-events-none">
-    Sign up
-  </a>
-</p>
+              Don't have an account?{" "}
+              <Link href="/signup" className="text-red-400 hover:text-red-300 transition-colors">
+                Sign up
+              </Link>
+            </p>
           </motion.div>
         </motion.div>
       </div>

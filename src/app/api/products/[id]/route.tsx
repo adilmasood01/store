@@ -24,18 +24,21 @@ export async function GET(
       );
     }
 
-    if (!ObjectId.isValid(id)) {
-      return NextResponse.json(
-        { success: false, message: 'Invalid product ID format' },
-        { status: 400 }
-      );
-    }
-
     await dbConnect();
 
-    const product =
-      (await FeaturedProduct.findById(id).lean().exec()) ||
-      (await FlashSale.findById(id).lean().exec());
+    let product;
+    
+    // Try to find by MongoDB ObjectId first
+    if (ObjectId.isValid(id)) {
+      product = await FeaturedProduct.findById(id).lean().exec() ||
+                await FlashSale.findById(id).lean().exec();
+    }
+    
+    // If not found by ObjectId, try to find by numeric ID
+    if (!product) {
+      product = await FeaturedProduct.findOne({ id: parseInt(id) }).lean().exec() ||
+                await FlashSale.findOne({ id: parseInt(id) }).lean().exec();
+    }
 
     if (!product) {
       return NextResponse.json(
