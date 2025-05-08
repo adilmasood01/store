@@ -1,8 +1,9 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { featuredProducts, flashSaleProducts } from '../products';
+import Image from 'next/image';
 
 interface Product {
   id?: number;
@@ -20,8 +21,7 @@ export default function SearchBar() {
   const [isResultsVisible, setIsResultsVisible] = useState(false);
   const router = useRouter();
 
-  // Combine all products
-  const allProducts = [...featuredProducts, ...flashSaleProducts];
+  const allProducts = useMemo(() => [...featuredProducts, ...flashSaleProducts], []);
 
   useEffect(() => {
     if (searchTerm.trim() === '') {
@@ -34,7 +34,7 @@ export default function SearchBar() {
       product.brand.toLowerCase().includes(searchTerm.toLowerCase())
     );
     setSearchResults(results);
-  }, [searchTerm]);
+  }, [searchTerm, allProducts]);
 
   const handleProductClick = (product: Product) => {
     const productId = product._id || product.id;
@@ -79,10 +79,12 @@ export default function SearchBar() {
               onClick={() => handleProductClick(product)}
               className="flex items-center p-3 hover:bg-gray-100 cursor-pointer"
             >
-              <img
+              <Image
                 src={`/images/${product.images[0]}`}
                 alt={product.name}
-                className="w-12 h-12 object-cover rounded"
+                width={48}
+                height={48}
+                className="object-cover rounded"
               />
               <div className="ml-3">
                 <p className="font-medium">{product.name}</p>

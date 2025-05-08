@@ -5,11 +5,9 @@ import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 import Image from "next/image";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 const Login = () => {
   const { login } = useAuth();
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -309,7 +307,7 @@ const Login = () => {
             </div>
 
             <p className="mt-8 text-center text-gray-400">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link href="/signup" className="text-red-400 hover:text-red-300 transition-colors">
                 Sign up
               </Link>

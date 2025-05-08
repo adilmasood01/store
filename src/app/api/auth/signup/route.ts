@@ -28,7 +28,9 @@ export async function POST(request: Request) {
     const user = await User.create({ email, password, name });
 
     // Remove password from response
-    const { password: _, ...userWithoutPassword } = user.toObject();
+    const userObject = user.toObject();
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password: _pwd, ...userWithoutPassword } = userObject;
 
     return NextResponse.json(
       { success: true, user: userWithoutPassword },
