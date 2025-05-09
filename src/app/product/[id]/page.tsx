@@ -84,10 +84,10 @@ const ProductDetail = () => {
 
   return (
     <section className="p-4 bg-gray-100 pt-20 max-w-6xl mx-auto">
-      <div className="flex flex-col lg:flex-row gap-4">
+      <div className="flex flex-col lg:flex-row gap-6">
         {/* Image Gallery */}
-        <div className="w-full lg:w-2/5 bg-white p-4 rounded shadow-sm">
-          <div className="relative h-96 mb-4">
+        <div className="w-full lg:w-2/5 bg-white p-4 rounded-lg shadow-sm">
+          <div className="relative h-64 sm:h-80 md:h-96 mb-4">
             <Image
               src={`/images/${product.images[selectedImage]}`}
               alt={product.name}
@@ -96,12 +96,12 @@ const ProductDetail = () => {
               priority
             />
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 overflow-x-auto pb-2">
             {product.images.map((img: string, index: number) => (
               <div
                 key={img}
                 onClick={() => setSelectedImage(index)}
-                className={`w-16 h-16 border-2 cursor-pointer ${
+                className={`flex-shrink-0 w-16 h-16 border-2 cursor-pointer ${
                   selectedImage === index ? 'border-orange-500' : 'border-gray-200'
                 }`}
               >
@@ -119,22 +119,22 @@ const ProductDetail = () => {
 
         {/* Product Details */}
         <div className="w-full lg:w-3/5 space-y-4">
-          <h1 className="text-2xl font-normal text-gray-800">{product.name}</h1>
+          <h1 className="text-xl sm:text-2xl font-normal text-gray-800">{product.name}</h1>
           
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-4">
             {renderRating(product.rating)}
             <div className="h-4 w-px bg-gray-300"></div>
             <span className="text-sm text-gray-500">2k+ Sold</span>
           </div>
 
-          <div className="bg-gray-50 p-4 rounded">
-            <div className="flex items-baseline gap-3">
-              <span className="text-3xl font-bold text-orange-500">${product.price}</span>
-              <span className="text-xl text-gray-500 line-through">${product.price * 1.5}</span>
+          <div className="bg-gray-50 p-4 rounded-lg">
+            <div className="flex flex-wrap items-baseline gap-3">
+              <span className="text-2xl sm:text-3xl font-bold text-orange-500">${product.price}</span>
+              <span className="text-lg sm:text-xl text-gray-500 line-through">${product.price * 1.5}</span>
               <span className="text-green-600 font-medium">-33%</span>
             </div>
             
-            <div className="mt-2 flex items-center gap-2 text-sm text-gray-600">
+            <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-gray-600">
               <span>Installment:</span>
               <span className="font-medium text-blue-600">1,017/month</span>
               <span className="text-gray-400">with</span>
@@ -143,24 +143,24 @@ const ProductDetail = () => {
           </div>
 
           {/* Delivery Info */}
-          <div className="bg-white p-4 rounded shadow-sm">
+          <div className="bg-white p-4 rounded-lg shadow-sm">
             <div className="flex items-center gap-2 mb-2">
               <Image src="/icons/delivery-truck.jpg" width={24} height={24} alt="Delivery" />
               <span className="font-bold text-gray-800">Delivery</span>
             </div>
             
-            <div className="flex justify-between text-sm">
+            <div className="flex flex-col sm:flex-row sm:justify-between text-sm gap-2">
               <div>
                 <p className="text-gray-600">China: <span className="font-medium">1-2 days</span></p>
                 <p className="text-gray-600">Outside China: <span className="font-medium">3-5 days</span></p>
               </div>
-              <button className="text-blue-600" type="button">Change Location</button>
+              <button className="text-blue-600 hover:text-blue-700 transition-colors" type="button">Change Location</button>
             </div>
           </div>
 
           {/* Service Options */}
-          <div className="bg-white p-4 rounded shadow-sm">
-            <div className="grid grid-cols-2 gap-4 text-sm">
+          <div className="bg-white p-4 rounded-lg shadow-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
               <div className="flex items-center gap-2 text-gray-800">
                 7 Days Returns
               </div>
@@ -171,13 +171,13 @@ const ProductDetail = () => {
           </div>
 
           {/* Quantity Selector */}
-          <div className="bg-white p-4 rounded shadow-sm">
-            <div className="flex items-center gap-4">
+          <div className="bg-white p-4 rounded-lg shadow-sm">
+            <div className="flex flex-wrap items-center gap-4">
               <span className="text-gray-600">Quantity:</span>
               <div className="flex items-center border rounded">
                 <button
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="px-3 py-1 bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  className="px-3 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
                   type="button"
                 >
                   -
@@ -185,7 +185,7 @@ const ProductDetail = () => {
                 <span className="w-12 text-center border-x text-black">{quantity}</span>
                 <button
                   onClick={() => setQuantity(quantity + 1)}
-                  className="px-3 py-1 bg-gray-100 text-gray-600 hover:bg-gray-200"
+                  className="px-3 py-2 bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
                   type="button"
                 >
                   +
@@ -195,17 +195,17 @@ const ProductDetail = () => {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-4">
             <button
               onClick={handleAddToCart}
-              className="flex-1 py-3 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded shadow-md"
+              className="w-full py-3 bg-orange-500 hover:bg-orange-600 text-white font-medium rounded-lg shadow-md transition-colors"
               type="button"
             >
               Add to Cart
             </button>
             <button
               onClick={handleBuyNow}
-              className="flex-1 py-3 bg-red-500 hover:bg-red-600 text-white font-medium rounded shadow-md"
+              className="w-full py-3 bg-red-500 hover:bg-red-600 text-white font-medium rounded-lg shadow-md transition-colors"
               type="button"
             >
               Buy Now
@@ -213,8 +213,8 @@ const ProductDetail = () => {
           </div>
 
           {/* Seller Info */}
-          <div className="bg-white p-4 rounded shadow-sm">
-            <div className="flex items-center justify-between">
+          <div className="bg-white p-4 rounded-lg shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div className="flex items-center gap-3">
                 <Image 
                   src="/images/seller-logo.jpg" 
@@ -225,7 +225,7 @@ const ProductDetail = () => {
                 />
                 <div>
                   <p className="font-bold text-gray-800">Official Store</p>
-                  <div className="flex items-center gap-2 text-sm text-gray-500">
+                  <div className="flex flex-wrap items-center gap-2 text-sm text-gray-500">
                     <span>94% Positive Seller Ratings</span>
                     <div className="w-1 h-1 bg-gray-400 rounded-full"></div>
                     <span>4.8/5</span>
@@ -233,7 +233,7 @@ const ProductDetail = () => {
                 </div>
               </div>
               <button 
-                className="px-4 py-2 border border-orange-500 text-orange-500 rounded hover:bg-orange-50"
+                className="w-full sm:w-auto px-4 py-2 border border-orange-500 text-orange-500 rounded-lg hover:bg-orange-50 transition-colors"
                 type="button"
               >
                 Visit Store
@@ -244,9 +244,9 @@ const ProductDetail = () => {
       </div>
 
       {/* Product Specs */}
-      <div className="mt-4 bg-white p-4 rounded shadow-sm">
+      <div className="mt-6 bg-white p-4 rounded-lg shadow-sm">
         <h3 className="text-lg font-medium mb-4 text-gray-800">Specifications</h3>
-        <div className="grid grid-cols-2 gap-4 text-sm">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
           <div className="flex justify-between">
             <span className="text-gray-500">Brand</span>
             <span className="text-gray-700">{product.brand || 'Generic'}</span>

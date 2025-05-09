@@ -137,29 +137,29 @@ export default function CartPage() {
             {/* Checkout Section */}
             <div className="mt-8 pt-6 border-t border-gray-700">
               <motion.div
-                className="flex justify-between items-center"
+                className="flex flex-col sm:flex-row justify-between items-center gap-4"
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.3, duration: 0.5 }}
               >
-                <h3 className="text-2xl font-bold text-red-400">
+                <h3 className="text-2xl font-bold text-red-400 text-center sm:text-left">
                   Order Total: ${total.toFixed(2)}
                 </h3>
                 
-                <div className="flex gap-4 items-center mt-4">
+                <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
                   <motion.button
                     onClick={clearCart}
-                    className="bg-gray-700 px-6 py-2 rounded-lg hover:bg-gray-600 transition text-white shadow-lg"
+                    className="w-full sm:w-auto bg-gray-700 px-6 py-3 rounded-lg hover:bg-gray-600 transition text-white shadow-lg"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                   >
                     Clear Cart
                   </motion.button>
 
-                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="w-full sm:w-auto">
                     <Link
                       href="/checkout"
-                      className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600 transition shadow-lg"
+                      className="block w-full bg-red-500 text-white px-6 py-3 rounded-lg hover:bg-red-600 transition shadow-lg text-center"
                     >
                       Proceed to Checkout
                     </Link>

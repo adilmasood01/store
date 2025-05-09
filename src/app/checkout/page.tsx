@@ -42,10 +42,10 @@ const Checkout = () => {
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="bg-gray-800 p-8 rounded-2xl shadow-2xl"
+          className="bg-gray-800 p-4 sm:p-8 rounded-2xl shadow-2xl"
         >
           <motion.h1
-            className="text-3xl font-bold mb-8 text-red-400 text-center"
+            className="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 text-red-400 text-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.2 }}
@@ -54,12 +54,12 @@ const Checkout = () => {
           </motion.h1>
 
           <motion.div
-            className="border border-gray-700 p-6 rounded-xl mb-8"
+            className="border border-gray-700 p-4 sm:p-6 rounded-xl mb-6 sm:mb-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.4 }}
           >
-            <h2 className="text-xl font-semibold mb-6 text-red-300">Order Summary</h2>
+            <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-red-300">Order Summary</h2>
             {cartItems.length === 0 ? (
               <p className="text-gray-400">Your cart is empty.</p>
             ) : (
@@ -68,7 +68,7 @@ const Checkout = () => {
                   {cartItems.map((item) => (
                     <motion.li
                       key={item.id}
-                      className="flex items-center justify-between bg-gray-700 p-4 rounded-lg"
+                      className="flex flex-col sm:flex-row sm:items-center justify-between bg-gray-700 p-4 rounded-lg gap-4"
                       initial={{ opacity: 0, x: -20 }}
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 20 }}
@@ -86,7 +86,7 @@ const Checkout = () => {
                           <p className="text-sm text-gray-400">Qty: {item.quantity}</p>
                         </div>
                       </div>
-                      <span className="text-red-400">
+                      <span className="text-red-400 text-right">
                         ${(item.price * item.quantity).toFixed(2)}
                       </span>
                     </motion.li>
@@ -95,7 +95,7 @@ const Checkout = () => {
               </AnimatePresence>
             )}
             <div className="border-t border-gray-700 mt-6 pt-4">
-              <div className="flex justify-between text-xl font-semibold text-red-400">
+              <div className="flex justify-between text-lg sm:text-xl font-semibold text-red-400">
                 <span>Total:</span>
                 <span>${totalPrice.toFixed(2)}</span>
               </div>
@@ -103,16 +103,16 @@ const Checkout = () => {
           </motion.div>
 
           <motion.div
-            className="border border-gray-700 p-6 rounded-xl mb-8"
+            className="border border-gray-700 p-4 sm:p-6 rounded-xl mb-6 sm:mb-8"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
           >
-            <h2 className="text-xl font-semibold mb-6 text-red-300">Payment Method</h2>
-            <div className="space-y-4">
+            <h2 className="text-lg sm:text-xl font-semibold mb-4 sm:mb-6 text-red-300">Payment Method</h2>
+            <div className="space-y-3 sm:space-y-4">
               <motion.label
                 whileHover={{ scale: 1.02 }}
-                className={`flex items-center p-4 rounded-lg cursor-pointer transition ${
+                className={`flex items-center p-3 sm:p-4 rounded-lg cursor-pointer transition ${
                   paymentMethod === "card" ? "bg-red-900/20 border-red-400" : "bg-gray-700 border-gray-600"
                 } border`}
               >
@@ -130,7 +130,7 @@ const Checkout = () => {
 
               <motion.label
                 whileHover={{ scale: 1.02 }}
-                className={`flex items-center p-4 rounded-lg cursor-pointer transition ${
+                className={`flex items-center p-3 sm:p-4 rounded-lg cursor-pointer transition ${
                   paymentMethod === "cod" ? "bg-red-900/20 border-red-400" : "bg-gray-700 border-gray-600"
                 } border`}
               >
@@ -153,7 +153,7 @@ const Checkout = () => {
             whileTap={{ scale: 0.98 }}
             onClick={handleCheckout}
             disabled={cartItems.length === 0}
-            className={`w-full py-4 text-lg font-semibold rounded-xl transition-all ${
+            className={`w-full py-3 sm:py-4 text-base sm:text-lg font-semibold rounded-xl transition-all ${
               cartItems.length === 0 
                 ? "bg-gray-600 cursor-not-allowed text-gray-400" 
                 : "bg-red-500 hover:bg-red-600 text-white"
